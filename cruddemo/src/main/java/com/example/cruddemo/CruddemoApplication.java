@@ -17,13 +17,20 @@ public class CruddemoApplication {
 	@Bean
 	public CommandLineRunner commandLineRunner(StudentDAO studentDAO){
 		return args -> {
-			createStudent(studentDAO);
+//			createStudent(studentDAO);
+			findStudent(studentDAO);
 		};
 	}
 
 	private void createStudent(StudentDAO studentDAO){
 		Student tempStudent = new Student("Deep","C","deep@c.com");
 		studentDAO.save(tempStudent);
+	}
+
+	//Finding by 'id'
+	private void findStudent(StudentDAO studentDAO){
+		Student foundStudent = studentDAO.findById(1);
+		System.out.println(foundStudent);
 	}
 
 }
