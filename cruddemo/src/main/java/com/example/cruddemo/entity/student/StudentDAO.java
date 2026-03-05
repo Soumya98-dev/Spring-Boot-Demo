@@ -9,4 +9,5 @@ public interface StudentDAO {
     Student findById(Integer id);
     List<Student> findAll();
     void update(Student theStudent);
+    void delete(Integer id);
 }

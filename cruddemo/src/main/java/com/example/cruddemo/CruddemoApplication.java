@@ -22,7 +22,8 @@ public class CruddemoApplication {
 //			createStudent(studentDAO);
 //			findStudent(studentDAO);
 //			queryForStudents(studentDAO);
-			updateStudent(studentDAO);
+//			updateStudent(studentDAO);
+			deleteStudent(studentDAO);
 		};
 	}
 
@@ -50,6 +51,11 @@ public class CruddemoApplication {
 		Student student = studentDAO.findById(studentId);
 		student.setFirstName("ADeep");
 		studentDAO.update(student);
+	}
+
+	private void deleteStudent(StudentDAO studentDAO){
+		int id = 1;
+		studentDAO.delete(id);
 	}
 
 }
