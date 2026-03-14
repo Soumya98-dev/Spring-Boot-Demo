@@ -5,18 +5,22 @@ import com.example.restapidesigndemo.entity.Employee;
 import com.example.restapidesigndemo.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
 public class EmployeeRestController {
 
     private EmployeeService employeeService;
+    private JsonMapper jsonMapper;
 
     @Autowired
-    public EmployeeRestController(EmployeeService theEmployeeService){
+    public EmployeeRestController(EmployeeService theEmployeeService, JsonMapper theJsonMapper){
         employeeService =  theEmployeeService;
+        jsonMapper = theJsonMapper;
     }
 
     @GetMapping("/employees")
@@ -47,6 +51,31 @@ public class EmployeeRestController {
     @PutMapping("/employees")
     public Employee updateEmployee(@RequestBody Employee theEmployee){
         Employee dbEmployee = employeeService.save(theEmployee);
+
+        return dbEmployee;
+    }
+
+    //support for patch mapping
+    @PatchMapping("/employees/{employeeId}")
+    public Employee patchEmployee(@PathVariable int employeeId, @RequestBody Map<String, Object> patchByPayload){
+        // * Get employee by ID
+        Employee tempEmployee = employeeService.findById(employeeId);
+
+        // * Fail if employee doesn’t exist
+        if(tempEmployee == null){
+            throw new RuntimeException("Employee id not found -"+employeeId);
+        }
+
+        // * Reject request if payload tries to change id
+        if(patchByPayload.containsKey("id")){
+            throw  new RuntimeException("Employee id cannot be present"+employeeId);
+        }
+
+        // * Merge JSON fields into the existing object
+        Employee patchedEmployee = jsonMapper.updateValue(tempEmployee, patchByPayload);
+
+        // * Save the updated entity
+        Employee dbEmployee = employeeService.save(patchedEmployee);
 
         return dbEmployee;
     }
